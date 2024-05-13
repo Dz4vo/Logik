@@ -13,5 +13,5 @@ Trieda reprezentujúca kolík. Má atribút polhy,farby a či bol odhalený. Pra
 ## Button
 Tlačidlo, ktoré spúšta mechaniku hintu.
 
-## zvyšok
+## Zvyšok
 Okrem týchto tried sa volajú úvodné funkcie na zadanie hodnôt čísel do konzoly alebo funkcie určené na porovnávanie postupností.

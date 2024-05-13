@@ -20,7 +20,7 @@ MAGENTA=(120,0,120)
 BGCOLOUR = (100, 50, 42)
 COLOR= [RED, GREEN, BLUE, YELLOW, PINK, ORANGE, BLACK,CYAN,MAGENTA]
 color=["červená","zelená","modrá","žltá","ružová","oranžová","čierna","tyrkosová","fialová"]
-
+# volanie vstupu do konzoly
 def get_number(x,k,l):
     while True:
         try:
@@ -32,7 +32,7 @@ def get_number(x,k,l):
         except ValueError:
             print("Toto nie je číslo")
 
-
+#konštanty
 LENGHT=get_number("dĺžku hľadanej postupnosti",3,6)
 ROWS = LENGHT
 COLS = 14
@@ -50,7 +50,7 @@ TITLE = "Logik"
 guesses=[]
 answers=[]
 every=list(itertools.product(range(AMOUNT_COLOUR), repeat=LENGHT))
-
+# funkcia na porovnávanie 2 postupnosti podľa pravidiel hry
 def compare(guess,actual):
     r=0
     w=0
@@ -67,12 +67,12 @@ def compare(guess,actual):
             w+=1
             remaining_actual.remove(x)
     return [r,w]
-
+# bruteforce overovanie možnosti na základe predchádzajúcich ťahov
 def bestmove(guesses,answers,every):
     for i in range(len(guesses)):
         every= [x for x in every if compare(guesses[i],x)==answers[i]]
     return " ".join([colours[x] for x in every[random.randrange(len(every))]])
-
+#tlačidlo
 class Button:
     def __init__(self, x, y):
         self.rect = pygame.Rect(x, y, LENGHT*TILESIZE, TILESIZE)
@@ -99,7 +99,7 @@ class Button:
         text_surface = font.render(self.text, True, self.text_color)
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
-    
+#kolik    
 class Pin:
     def __init__(self, x, y, colour=None, revealed=True):
         self.x, self.y = x, y
@@ -116,7 +116,7 @@ class Pin:
 
         else:
             pygame.draw.circle(screen, DARKBROWN, center, 10)
-
+#hracia plocha
 class Board:
     def __init__(self):
     

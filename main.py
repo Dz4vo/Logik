@@ -21,6 +21,7 @@ BGCOLOUR = (100, 50, 42)
 COLOR= [RED, GREEN, BLUE, YELLOW, PINK, ORANGE, BLACK,CYAN,MAGENTA]
 color=["červená","zelená","modrá","žltá","ružová","oranžová","čierna","tyrkosová","fialová"]
 
+# volanie z konzoly
 def get_number(x,k,l):
     while True:
         try:
@@ -32,7 +33,7 @@ def get_number(x,k,l):
         except ValueError:
             print("Toto nie je číslo")
 
-
+#konštanty
 LENGHT=get_number("dĺžku hľadanej postupnosti",3,6)
 AMOUNT_COLOUR = get_number("počet farieb ",LENGHT,min(7,2*LENGHT))
 TRIES=get_number("počet pokusov",5,10)
@@ -48,6 +49,7 @@ HEIGHT = (COLS * TILESIZE) + 1
 FPS = 60
 TITLE = "Logik"
 
+#určovanie hintu
 guesses=[]
 answers=[]
 every=list(itertools.product(range(AMOUNT_COLOUR), repeat=LENGHT))
@@ -73,7 +75,7 @@ def bestmove(guesses,answers,every):
     for i in range(len(guesses)):
         every= [x for x in every if compare(guesses[i],x)==answers[i]]
     return " ".join([colours[x] for x in every[random.randrange(len(every))]])
-
+#tlačidlo a jeho funkcie
 class Button:
     def __init__(self, x, y):
         self.rect = pygame.Rect(x, y, LENGHT*TILESIZE, TILESIZE)
@@ -100,7 +102,7 @@ class Button:
         text_surface = font.render(self.text, True, self.text_color)
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
-    
+#kolíky a jeho funkcie
 class Pin:
     def __init__(self, x, y, colour=None, revealed=True):
         self.x, self.y = x, y
@@ -117,7 +119,7 @@ class Pin:
 
         else:
             pygame.draw.circle(screen, DARKBROWN, center, 10)
-
+# doska 
 class Board:
     def __init__(self):
     
@@ -129,7 +131,7 @@ class Board:
         self.colour_selection_surface.fill(LIGHTGREY)
 
         self.button=Button(0,(TRIES+3)*TILESIZE)
-
+# tvorba priestoru pre kolíky
         self.colour_selection = [Pin(COLOURS.index(x)%ROWS*TILESIZE, COLOURS.index(x)//ROWS*TILESIZE,x) for x in COLOURS]
         self.board_pins = [[Pin(col * TILESIZE, row * TILESIZE) for col in range(LENGHT)] for row in range(TRIES+1)]
 
@@ -156,7 +158,7 @@ class Board:
 
         pygame.draw.rect(screen, GREEN, (0, TILESIZE*self.tries, LENGHT*TILESIZE, TILESIZE), 2)
 
-    
+  
     def select_colour(self, mouse_x, mouse_y, previous_colour):
         for pin in self.colour_selection:
             if pin.x < mouse_x < pin.x + TILESIZE and pin.y < mouse_y - (TRIES+1)*TILESIZE < pin.y + TILESIZE:
@@ -205,6 +207,7 @@ class Board:
             pin.revealed = True
   
 class Game:
+# pozadie na beh hry
     def __init__(self):
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption(TITLE)
@@ -225,7 +228,7 @@ class Game:
         self.screen.fill(BGCOLOUR)
         self.board.draw(self.screen)
         pygame.display.flip()
-
+# kontrola hráčových akcií v hre
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

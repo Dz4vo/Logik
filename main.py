@@ -3,11 +3,9 @@ import random
 import itertools
 pygame.init()
 
-# FARBY (r, g, b)
-WHITE = (200, 200, 200)
+# farby
+WHITE = (120, 120, 120)
 BLACK = (30, 30, 30)
-DARKGREY = (40, 40, 40)
-LIGHTGREY = (120, 80, 80)
 DARKBROWN = (55, 22, 30)
 GREEN = (0, 210, 0)
 BLUE = (0, 0, 200)
@@ -15,11 +13,8 @@ RED = (210, 0, 0)
 YELLOW = (210, 210, 0)
 PINK = (255, 0, 255)
 ORANGE = (210, 110, 0)
-CYAN= (0,255,255)
-MAGENTA=(120,0,120)
-BGCOLOUR = (100, 50, 42)
-COLOR= [RED, GREEN, BLUE, YELLOW, PINK, ORANGE, BLACK,CYAN,MAGENTA]
-color=["červená","zelená","modrá","žltá","ružová","oranžová","čierna","tyrkosová","fialová"]
+COLOR= [RED, GREEN, BLUE, YELLOW, PINK, ORANGE, BLACK]
+color=["červená","zelená","modrá","žltá","ružová","oranžová","čierna"]
 
 # volanie z konzoly
 def get_number(x,k,l):
@@ -102,7 +97,7 @@ class Button:
         text_surface = font.render(self.text, True, self.text_color)
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
-#kolíky a jeho funkcie
+#kolíky a ich funkcie
 class Pin:
     def __init__(self, x, y, colour=None, revealed=True):
         self.x, self.y = x, y
@@ -115,7 +110,7 @@ class Pin:
             pygame.draw.circle(screen, tuple(x * 0.3 for x in self.colour), tuple(x + 1 for x in center), 15)
             pygame.draw.circle(screen, self.colour, center, 15)
         elif not self.revealed:
-            pygame.draw.circle(screen, LIGHTGREY, center, 15)
+            pygame.draw.circle(screen, BLACK, center, 15)
 
         else:
             pygame.draw.circle(screen, DARKBROWN, center, 10)
@@ -125,10 +120,10 @@ class Board:
     
         self.tries = TRIES
         self.pins_surface = pygame.Surface((LENGHT*TILESIZE, (TRIES+4)*TILESIZE))
-        self.pins_surface.fill(BGCOLOUR)
+        self.pins_surface.fill(WHITE)
 
         self.colour_selection_surface = pygame.Surface((LENGHT*TILESIZE, 2*TILESIZE))
-        self.colour_selection_surface.fill(LIGHTGREY)
+        self.colour_selection_surface.fill(WHITE)
 
         self.button=Button(0,(TRIES+3)*TILESIZE)
 # tvorba priestoru pre kolíky
@@ -206,15 +201,17 @@ class Board:
         for pin in self.board_pins[0]:
             pin.revealed = True
   
+
+
 class Game:
-# pozadie na beh hry
     def __init__(self):
+        pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
 
     def new(self):
-        self.board = Board()
+        self.board = Board() 
         self.colour = None
 
     def run(self):
@@ -222,55 +219,53 @@ class Game:
         while self.playing:
             self.clock.tick(FPS)
             self.events()
-            self.draw()
+            self.update()
 
-    def draw(self):
-        self.screen.fill(BGCOLOUR)
+    def update(self):
+        self.screen.fill(WHITE)
         self.board.draw(self.screen)
         pygame.display.flip()
-# kontrola hráčových akcií v hre
+
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                quit(0)
+                quit()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                mouse_x, mouse_y = event.pos
-                self.colour = self.board.select_colour(mouse_x, mouse_y, self.colour)
-                if self.colour is not None:
-                    self.board.place_pin(mouse_x, mouse_y, self.colour)
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    if self.board.check_row():
-                        result = self.board.check_clues()
-                        print(result[0],result[1])
-                        if result[0]==LENGHT:
-                            print("Vyhrali ste!")
-                            self.board.reveal_code()
-                            self.end_screen()
-                        elif not self.board.next_round():
-                            print("Koniec hry !")
-                            self.board.reveal_code()
-                            self.end_screen()
-  
+                self.mouse_click(event.pos)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                self.enter()
+
+    def mouse_click(self, position):
+        mouse_x, mouse_y = position
+        self.colour = self.board.select_colour(mouse_x, mouse_y, self.colour)
+        if self.colour is not None:
+            self.board.place_pin(mouse_x, mouse_y, self.colour)
+
+    def enter(self):
+        if self.board.check_row():
+            result = self.board.check_clues()
+            print(result[0], result[1])
+            if result[0] == LENGHT:
+                print("Vyhrali ste!")
+                self.board.reveal_code()
+                self.end_screen()
+            elif not self.board.next_round():
+                print("Koniec hry!")
+                self.board.reveal_code()
+                self.end_screen()
+
     def end_screen(self):
         while True:
             event = pygame.event.wait()
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit(0)
+            self.update()
 
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    self.playing = False
-                    return
 
-            self.draw()
 
 game = Game()
 while True:
     game.new()
     game.run()
-
-
-

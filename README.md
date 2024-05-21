@@ -10,7 +10,7 @@ Ak ste vyplnili celý rad tak stlačením klávesy **ENTER** ho submitnete a kon
 
 Ak si neviete rady tak môžete stlačiť tlačidlo **HINT**, ktoré do konzoly vypíše postupnosť farieb, ktorá môže byť potenciálnym riešením na základe predošlých ťahov a výsledkov.
 
-V prípade, že sa Vám podarilo postupnosť v danom počte krokov uhádnuť, v konzole sa vypíše **Vyhrali ste** v opačnom prípade po minutí všetkých pokusov sa tam vypíše **Koniec hry**.
+V prípade, že sa Vám podarilo postupnosť v danom počte krokov uhádnuť, v konzole sa vypíše **Vyhrali ste** v opačnom prípade po minutí všetkých pokusov sa tam vypíše **Koniec hry**. Okno hry zavriete klikntím na  **X**  v pravom hornom rohu.
 
 
 

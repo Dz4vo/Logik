@@ -3,7 +3,6 @@ import random
 import itertools
 pygame.init()
 
-# farby
 WHITE = (120, 120, 120)
 BLACK = (30, 30, 30)
 DARKBROWN = (55, 22, 30)
@@ -16,7 +15,6 @@ ORANGE = (210, 110, 0)
 COLOR= [RED, GREEN, BLUE, YELLOW, PINK, ORANGE, BLACK]
 color=["červená","zelená","modrá","žltá","ružová","oranžová","čierna"]
 
-# volanie z konzoly
 def get_number(x,k,l):
     while True:
         try:
@@ -28,23 +26,21 @@ def get_number(x,k,l):
         except ValueError:
             print("Toto nie je číslo")
 
-#konštanty
 LENGHT=get_number("dĺžku hľadanej postupnosti",3,6)
 AMOUNT_COLOUR = get_number("počet farieb ",LENGHT,min(7,2*LENGHT))
 TRIES=get_number("počet pokusov",5,10)
 ROWS = LENGHT
-COLS = TRIES+4
-TILESIZE = 40
+COLLUMS = TRIES+4
+SQUARE = 40
 COLOURS=COLOR[:AMOUNT_COLOUR]
 colours=color[:AMOUNT_COLOUR]
 
 
-WIDTH = (ROWS * TILESIZE) + 1
-HEIGHT = (COLS * TILESIZE) + 1
+WIDTH = (ROWS * SQUARE) + 1
+HEIGHT = (COLLUMS * SQUARE) + 1
 FPS = 60
 TITLE = "Logik"
 
-#určovanie hintu
 guesses=[]
 answers=[]
 every=list(itertools.product(range(AMOUNT_COLOUR), repeat=LENGHT))
@@ -70,17 +66,15 @@ def bestmove(guesses,answers,every):
     for i in range(len(guesses)):
         every= [x for x in every if compare(guesses[i],x)==answers[i]]
     return " ".join([colours[x] for x in every[random.randrange(len(every))]])
-#tlačidlo a jeho funkcie
+
 class Button:
     def __init__(self, x, y):
-        self.rect = pygame.Rect(x, y, LENGHT*TILESIZE, TILESIZE)
+        self.rect = pygame.Rect(x, y, LENGHT*SQUARE, SQUARE)
         self.color = GREEN
         self.hover_color = RED
         self.text = "HINT"
         self.text_color = WHITE
         self.is_pressed = False
-
-
 
     def drawB(self, screen):
         if self.rect.collidepoint(pygame.mouse.get_pos()):
@@ -97,38 +91,38 @@ class Button:
         text_surface = font.render(self.text, True, self.text_color)
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
-#kolíky a ich funkcie
+
 class Pin:
     def __init__(self, x, y, colour=None, revealed=True):
-        self.x, self.y = x, y
+        self.x = x
+        self.y= y
         self.colour = colour
         self.revealed = revealed
 
     def draw(self, screen):
-        center = (self.x + (TILESIZE/2), self.y + (TILESIZE/2))
+        center = (self.x + (SQUARE/2), self.y + (SQUARE/2))
         if self.colour is not None and self.revealed:
-            pygame.draw.circle(screen, tuple(x * 0.3 for x in self.colour), tuple(x + 1 for x in center), 15)
+            pygame.draw.circle(screen, tuple(x  for x in self.colour), tuple(x  for x in center), 15)
             pygame.draw.circle(screen, self.colour, center, 15)
         elif not self.revealed:
             pygame.draw.circle(screen, BLACK, center, 15)
-
         else:
             pygame.draw.circle(screen, DARKBROWN, center, 10)
-# doska 
+ 
 class Board:
     def __init__(self):
     
         self.tries = TRIES
-        self.pins_surface = pygame.Surface((LENGHT*TILESIZE, (TRIES+4)*TILESIZE))
+        self.pins_surface = pygame.Surface((LENGHT*SQUARE, (TRIES+4)*SQUARE))
         self.pins_surface.fill(WHITE)
 
-        self.colour_selection_surface = pygame.Surface((LENGHT*TILESIZE, 2*TILESIZE))
+        self.colour_selection_surface = pygame.Surface((LENGHT*SQUARE, 2*SQUARE))
         self.colour_selection_surface.fill(WHITE)
 
-        self.button=Button(0,(TRIES+3)*TILESIZE)
-# tvorba priestoru pre kolíky
-        self.colour_selection = [Pin(COLOURS.index(x)%ROWS*TILESIZE, COLOURS.index(x)//ROWS*TILESIZE,x) for x in COLOURS]
-        self.board_pins = [[Pin(col * TILESIZE, row * TILESIZE) for col in range(LENGHT)] for row in range(TRIES+1)]
+        self.button=Button(0,(TRIES+3)*SQUARE)
+
+        self.colour_selection = [Pin(COLOURS.index(x)%ROWS*SQUARE, COLOURS.index(x)//ROWS*SQUARE,x) for x in COLOURS]
+        self.board_pins = [[Pin(col * SQUARE, row * SQUARE) for col in range(LENGHT)] for row in range(TRIES+1)]
 
         random_code = random.choices(COLOURS,k=LENGHT)
         for i, pin in enumerate(self.board_pins[0]):
@@ -140,7 +134,6 @@ class Board:
         for pin in self.colour_selection:
             pin.draw(self.colour_selection_surface)
 
- 
         for row in self.board_pins:
             for pin in row:
                 pin.draw(self.pins_surface)
@@ -148,29 +141,26 @@ class Board:
         self.button.drawB(self.pins_surface)
 
         screen.blit(self.pins_surface, (0,0))
-        screen.blit(self.colour_selection_surface, (0, (TRIES+1)*TILESIZE))
+        screen.blit(self.colour_selection_surface, (0, (TRIES+1)*SQUARE))
         
+        pygame.draw.rect(screen, GREEN, (0, SQUARE*self.tries, LENGHT*SQUARE, SQUARE), 2)
 
-        pygame.draw.rect(screen, GREEN, (0, TILESIZE*self.tries, LENGHT*TILESIZE, TILESIZE), 2)
-
-  
     def select_colour(self, mouse_x, mouse_y, previous_colour):
         for pin in self.colour_selection:
-            if pin.x < mouse_x < pin.x + TILESIZE and pin.y < mouse_y - (TRIES+1)*TILESIZE < pin.y + TILESIZE:
+            if pin.x < mouse_x < pin.x + SQUARE and pin.y < mouse_y - (TRIES+1)*SQUARE < pin.y + SQUARE:
                 return pin.colour
 
         return previous_colour
 
     def place_pin(self, mouse_x, mouse_y, colour):
         for pin in self.board_pins[self.tries]:
-            if pin.x < mouse_x < pin.x + TILESIZE and pin.y < mouse_y < pin.y + TILESIZE:
+            if pin.x < mouse_x < pin.x + SQUARE and pin.y < mouse_y < pin.y + SQUARE:
                 pin.colour = colour
                 break
 
     def check_row(self):
         return all(pin.colour is not None for pin in self.board_pins[self.tries])
 
-      
     def check_clues(self):
         r=0
         w=0
@@ -191,7 +181,6 @@ class Board:
         answers.append([r,w])
         return r,w
 
-
     def next_round(self):
         self.tries -= 1
         self.button.is_pressed=False
@@ -201,8 +190,6 @@ class Board:
         for pin in self.board_pins[0]:
             pin.revealed = True
   
-
-
 class Game:
     def __init__(self):
         pygame.init()
@@ -262,8 +249,6 @@ class Game:
                 pygame.quit()
                 quit(0)
             self.update()
-
-
 
 game = Game()
 while True:

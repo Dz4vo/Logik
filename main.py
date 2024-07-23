@@ -90,7 +90,7 @@ def best_move(guesses, answers, all_combinations):
     for guess, answer in zip(guesses, answers):
         possible_combinations = [comb for comb in possible_combinations if compare(guess, comb) == answer]
 
-    if len(possible_combinations) > 1296 and LENGTH > 4:
+    if len(possible_combinations) > 500 and LENGTH > 4:
         return " ".join([GAME_COLOR_NAMES[x] for x in random.choice(possible_combinations)])
     elif len(possible_combinations) != 1:
         return " ".join([GAME_COLOR_NAMES[x] for x in knuth(possible_combinations)])

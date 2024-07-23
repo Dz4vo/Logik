@@ -68,7 +68,8 @@ def compare(guess, actual):
 
 def knuth(possible_combinations):
     best_guess = None
-    max_eliminated = 0
+    max_eliminated = -1
+    print(len(possible_combinations))
 
     for guess in possible_combinations:
         min_eliminated = AMOUNT_COLORS ** LENGTH
@@ -90,7 +91,7 @@ def best_move(guesses, answers, all_combinations):
     for guess, answer in zip(guesses, answers):
         possible_combinations = [comb for comb in possible_combinations if compare(guess, comb) == answer]
 
-    if len(possible_combinations) > 500 and LENGTH > 4:
+    if len(possible_combinations) > 300 or len(answers) == 0:
         return " ".join([GAME_COLOR_NAMES[x] for x in random.choice(possible_combinations)])
     elif len(possible_combinations) != 1:
         return " ".join([GAME_COLOR_NAMES[x] for x in knuth(possible_combinations)])
@@ -279,4 +280,3 @@ if __name__ == "__main__":
     while True:
         game.new_game()
         game.run()
-

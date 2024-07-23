@@ -27,7 +27,7 @@ def get_number(x,k,l):
             print("Toto nie je číslo")
 
 LENGHT=get_number("dĺžku hľadanej postupnosti",3,6)
-AMOUNT_COLOUR = get_number("počet farieb ",LENGHT,min(7,2*LENGHT))
+AMOUNT_COLOUR = get_number("počet farieb ",3,6)
 TRIES=get_number("počet pokusov",5,10)
 ROWS = LENGHT
 COLLUMS = TRIES+4
@@ -62,10 +62,30 @@ def compare(guess,actual):
             remaining_actual.remove(x)
     return [r,w]
 
+def knuth(possible):
+    best=None
+    max=0
+    for x in possible:
+        destroy=AMOUNT_COLOUR**LENGHT
+        for i in range(LENGHT+1):
+            for j in range(LENGHT-i+1):
+                destroy=min(len(possible)-sum(1 for y in possible if compare(x,y)==[i,j]),destroy)
+        if destroy>max:
+            best=x
+            max=destroy
+    return best
+                   
+
 def bestmove(guesses,answers,every):
     for i in range(len(guesses)):
         every= [x for x in every if compare(guesses[i],x)==answers[i]]
-    return " ".join([colours[x] for x in every[random.randrange(len(every))]])
+   
+    if len(every)>1296 and LENGHT>4:
+        return " ".join([colours[x] for x in every[random.randrange(len(every))]])
+    elif len (every) !=1:
+        return " ".join([colours[x] for x in knuth(every)])
+    else:
+        return " ".join([colours[x] for x in every[0]])
 
 class Button:
     def __init__(self, x, y):
@@ -117,7 +137,7 @@ class Board:
         self.pins_surface.fill(WHITE)
 
         self.colour_selection_surface = pygame.Surface((LENGHT*SQUARE, 2*SQUARE))
-        self.colour_selection_surface.fill(WHITE)
+        self.colour_selection_surface.fill(DARKBROWN)
 
         self.button=Button(0,(TRIES+3)*SQUARE)
 

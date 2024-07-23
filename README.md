@@ -8,7 +8,7 @@ Po spustením programu je potrebné do konzole zadať dĺžku postupnosti a poč
 
 Ak ste vyplnili celý rad tak stlačením klávesy **ENTER** ho submitnete a konzole sa vám objavia dve čísla. Prvé hovorí koľko kolíkov ste umiestnili na správnu pozíciu a druhé hovorí koľko kolíkov správnej farby sa nachádza na nesprávnej pozícii.
 
-Ak si neviete rady tak môžete stlačiť tlačidlo **HINT**, ktoré do konzoly vypíše postupnosť farieb, ktorá môže byť potenciálnym riešením na základe predošlých ťahov a výsledkov.
+Ak si neviete rady tak môžete stlačiť tlačidlo **HINT**, ktoré do konzoly vypíše postupnosť farieb, ktorá môže byť potenciálnym riešením na základe predošlých ťahov a výsledkov. Niekedy určenie hintu môže trvať zopár sekúnd.
 
 V prípade, že sa Vám podarilo postupnosť v danom počte krokov uhádnuť, v konzole sa vypíše **Vyhrali ste** v opačnom prípade po minutí všetkých pokusov sa tam vypíše **Koniec hry**. Okno hry zavriete klikntím na  **X**  v pravom hornom rohu.
 

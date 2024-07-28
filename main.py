@@ -1,10 +1,10 @@
+from turtle import Screen
 import pygame
 import random
 import itertools
 
 pygame.init()
 
-# Constants
 WHITE = (120, 120, 120)
 BLACK = (30, 30, 30)
 DARKBROWN = (55, 22, 30)
@@ -14,6 +14,7 @@ RED = (210, 0, 0)
 YELLOW = (210, 210, 0)
 PINK = (255, 0, 255)
 ORANGE = (210, 110, 0)
+BEIGE=(245,245,220)
 COLORS = [RED, GREEN, BLUE, YELLOW, PINK, ORANGE, BLACK]
 COLOR_NAMES = ["červená", "zelená", "modrá", "žltá", "ružová", "oranžová", "čierna"]
 
@@ -31,8 +32,8 @@ def get_number(prompt, min_val, max_val):
 LENGTH = get_number("dĺžku hľadanej postupnosti", 3, 6)
 AMOUNT_COLORS = get_number("počet farieb", 3, 6)
 TRIES = get_number("počet pokusov", 5, 10)
-ROWS = LENGTH
-COLS = TRIES + 4
+ROWS = LENGTH+1
+COLS = TRIES + 5
 SQUARE = 40
 GAME_COLORS = COLORS[:AMOUNT_COLORS]
 GAME_COLOR_NAMES = COLOR_NAMES[:AMOUNT_COLORS]
@@ -69,7 +70,6 @@ def compare(guess, actual):
 def knuth(possible_combinations):
     best_guess = None
     max_eliminated = -1
-    print(len(possible_combinations))
 
     for guess in possible_combinations:
         min_eliminated = AMOUNT_COLORS ** LENGTH
@@ -140,15 +140,20 @@ class Pin:
 class Board:
     def __init__(self):
         self.tries = TRIES
+
         self.pins_surface = pygame.Surface((LENGTH * SQUARE, (TRIES + 4) * SQUARE))
-        self.pins_surface.fill(WHITE)
+        self.pins_surface.fill(BEIGE)
 
         self.color_selection_surface = pygame.Surface((LENGTH * SQUARE, 2 * SQUARE))
         self.color_selection_surface.fill(DARKBROWN)
 
+        self.clue_display_surface=pygame.Surface((SQUARE,(TRIES+4)*SQUARE))
+        self.clue_display_surface.fill(BEIGE)
+
         self.button = Button(0, (TRIES + 3) * SQUARE)
         self.color_selection = [Pin(i % ROWS * SQUARE, i // ROWS * SQUARE, color) for i, color in enumerate(GAME_COLORS)]
         self.board_pins = [[Pin(col * SQUARE, row * SQUARE) for col in range(LENGTH)] for row in range(TRIES + 1)]
+      
 
         random_code = random.choices(GAME_COLORS, k=LENGTH)
         for i, pin in enumerate(self.board_pins[0]):
@@ -162,10 +167,12 @@ class Board:
         for row in self.board_pins:
             for pin in row:
                 pin.draw(self.pins_surface)
-
+            
         self.button.draw(self.pins_surface)
         screen.blit(self.pins_surface, (0, 0))
         screen.blit(self.color_selection_surface, (0, (TRIES + 1) * SQUARE))
+        screen.blit(self.clue_display_surface,(LENGTH*SQUARE,0))
+     
         pygame.draw.rect(screen, GREEN, (0, self.tries * SQUARE, LENGTH * SQUARE, SQUARE), 2)
 
     def select_color(self, mouse_x, mouse_y, previous_color):
@@ -206,6 +213,14 @@ class Board:
         answers.append([red_pegs, white_pegs])
         return red_pegs, white_pegs
 
+    def display_clues(self,value_1,value_2):
+        font = pygame.font.Font(None, SQUARE)
+        red_peg = font.render(value_1, True, RED)
+        white_peg=font.render(value_2,True,WHITE)
+        self.clue_display_surface.blit(red_peg,(0,(self.tries+0.25)*SQUARE))
+        self.clue_display_surface.blit(white_peg,(0.5*SQUARE,(self.tries+0.25)*SQUARE))
+
+
     def next_round(self):
         self.tries -= 1
         self.button.is_pressed = False
@@ -214,6 +229,7 @@ class Board:
     def reveal_code(self):
         for pin in self.board_pins[0]:
             pin.revealed = True
+
 
 class Game:
     def __init__(self):
@@ -257,7 +273,7 @@ class Game:
     def handle_enter(self):
         if self.board.check_row():
             result = self.board.check_clues()
-            print(result[0], result[1])
+            self.board.display_clues(str(result[0]),str(result[1]))
             if result[0] == LENGTH:
                 print("Vyhrali ste!")
                 self.board.reveal_code()
@@ -274,6 +290,7 @@ class Game:
                 pygame.quit()
                 quit()
             self.update_screen()
+  
 
 if __name__ == "__main__":
     game = Game()
